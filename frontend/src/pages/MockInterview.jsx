@@ -146,7 +146,7 @@ function MockInterview() {
 
             <div className="interview-eyebrow">
               <span />
-              AI MOCK INTERVIEW
+              MOCK INTERVIEW PRACTICE
             </div>
 
             <h1>

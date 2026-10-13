@@ -277,7 +277,7 @@ function ResumeAnalyzer() {
       {/* NAVBAR */}
 
       <AppHeader active="analyzer">
-<span className="ah-status"><i />AI system online</span>
+<span className="ah-status"><i />Resume analysis available</span>
 <button type="button" className="ah-btn ah-btn--primary" onClick={goToDashboard}>Dashboard <span>↗</span></button>
 </AppHeader>
 
@@ -381,7 +381,7 @@ function ResumeAnalyzer() {
               <div className="upload-meta">
                 <span>PDF ONLY</span>
                 <span>MAX 5 MB</span>
-                <span>AI-POWERED</span>
+                <span>PROFILE ANALYSIS</span>
               </div>
 
             </div>
