@@ -1,0 +1,1416 @@
+/* =========================================================
+   AI COACH — CAREER COACH
+   Premium AI Career Assistant
+   ========================================================= */
+
+:root {
+  --coach-bg: #f4f8fc;
+  --coach-white: #ffffff;
+  --coach-navy: #102b49;
+  --coach-blue: #168fe3;
+  --coach-mint: #42cbb4;
+  --coach-orange: #f3a34b;
+
+  --coach-text: #183550;
+  --coach-muted: #71879a;
+  --coach-line: #dce7ef;
+}
+
+/* =========================================================
+   PAGE
+   ========================================================= */
+
+.career-coach-page {
+  position: relative;
+  min-height: 100vh;
+
+  overflow-x: hidden;
+
+  background:
+    radial-gradient(
+      circle at 82% 5%,
+      rgba(66, 203, 180, 0.12),
+      transparent 27%
+    ),
+    radial-gradient(
+      circle at 8% 20%,
+      rgba(22, 143, 227, 0.09),
+      transparent 28%
+    ),
+    var(--coach-bg);
+
+  color: var(--coach-text);
+
+  font-family:
+    Inter,
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+}
+
+.career-coach-page * {
+  box-sizing: border-box;
+}
+
+/* =========================================================
+   BACKGROUND
+   ========================================================= */
+
+.coach-background-grid {
+  position: fixed;
+  inset: 0;
+
+  z-index: 0;
+
+  pointer-events: none;
+
+  opacity: 0.45;
+
+  background-image:
+    linear-gradient(
+      rgba(22, 143, 227, 0.035) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      90deg,
+      rgba(22, 143, 227, 0.035) 1px,
+      transparent 1px
+    );
+
+  background-size: 44px 44px;
+
+  mask-image:
+    linear-gradient(
+      to bottom,
+      black,
+      transparent 90%
+    );
+}
+
+.coach-glow {
+  position: fixed;
+
+  z-index: 0;
+
+  width: 400px;
+  height: 400px;
+
+  border-radius: 50%;
+
+  filter: blur(110px);
+
+  pointer-events: none;
+
+  opacity: 0.12;
+}
+
+.coach-glow-blue {
+  left: -240px;
+  top: 300px;
+
+  background: var(--coach-blue);
+}
+
+.coach-glow-mint {
+  right: -230px;
+  top: 650px;
+
+  background: var(--coach-mint);
+}
+
+/* =========================================================
+   HEADER
+   ========================================================= */
+
+.coach-header {
+  position: relative;
+  z-index: 10;
+
+  width:
+    min(
+      1380px,
+      calc(100% - 48px)
+    );
+
+  height: 82px;
+
+  margin: 0 auto;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  border-bottom:
+    1px solid
+    rgba(178, 199, 215, 0.55);
+}
+
+.coach-brand {
+  display: flex;
+
+  align-items: center;
+
+  gap: 12px;
+
+  cursor: pointer;
+}
+
+.coach-brand-mark {
+  width: 38px;
+  height: 38px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  gap: 3px;
+
+  border-radius: 12px;
+
+  background:
+    linear-gradient(
+      145deg,
+      #168fe3,
+      #47c7b3
+    );
+
+  box-shadow:
+    0
+    10px
+    28px
+    rgba(22, 143, 227, 0.2);
+}
+
+.coach-brand-mark span {
+  width: 3px;
+
+  border-radius: 5px;
+
+  background: white;
+}
+
+.coach-brand-mark span:nth-child(1) {
+  height: 11px;
+}
+
+.coach-brand-mark span:nth-child(2) {
+  height: 19px;
+}
+
+.coach-brand-mark span:nth-child(3) {
+  height: 14px;
+}
+
+.coach-brand strong {
+  display: block;
+
+  color: var(--coach-navy);
+
+  font-size: 15px;
+
+  font-weight: 800;
+
+  letter-spacing: -0.02em;
+}
+
+.coach-brand small {
+  display: block;
+
+  margin-top: 2px;
+
+  color: #8aa0b3;
+
+  font-size: 8px;
+
+  font-weight: 800;
+
+  letter-spacing: 0.16em;
+}
+
+.coach-dashboard-button {
+  height: 40px;
+
+  padding:
+    0
+    17px;
+
+  border:
+    1px
+    solid
+    var(--coach-line);
+
+  border-radius: 11px;
+
+  background:
+    rgba(255, 255, 255, 0.8);
+
+  color: var(--coach-navy);
+
+  font-size: 11px;
+
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+.coach-dashboard-button:hover {
+  transform: translateY(-2px);
+
+  box-shadow:
+    0
+    10px
+    25px
+    rgba(36, 78, 109, 0.1);
+}
+
+/* =========================================================
+   MAIN
+   ========================================================= */
+
+.coach-main {
+  position: relative;
+  z-index: 2;
+
+  width:
+    min(
+      1250px,
+      calc(100% - 48px)
+    );
+
+  margin: 0 auto;
+
+  padding:
+    70px
+    0
+    90px;
+}
+
+/* =========================================================
+   INTRO
+   ========================================================= */
+
+.coach-intro {
+  max-width: 780px;
+
+  margin-bottom: 50px;
+}
+
+.coach-eyebrow {
+  display: flex;
+
+  align-items: center;
+
+  gap: 9px;
+
+  color: var(--coach-blue);
+
+  font-size: 9px;
+
+  font-weight: 900;
+
+  letter-spacing: 0.17em;
+}
+
+.coach-eyebrow span {
+  width: 22px;
+  height: 2px;
+
+  border-radius: 10px;
+
+  background: var(--coach-blue);
+}
+
+.coach-intro h1 {
+  margin:
+    20px
+    0
+    18px;
+
+  color: var(--coach-navy);
+
+  font-size:
+    clamp(
+      50px,
+      7vw,
+      82px
+    );
+
+  line-height: 0.92;
+
+  letter-spacing: -0.07em;
+
+  font-weight: 800;
+}
+
+.coach-intro h1 span {
+  color: var(--coach-blue);
+}
+
+.coach-intro p {
+  max-width: 650px;
+
+  margin: 0;
+
+  color: var(--coach-muted);
+
+  font-size: 14px;
+
+  line-height: 1.8;
+}
+
+/* =========================================================
+   CHAT LAYOUT
+   ========================================================= */
+
+.coach-chat-layout {
+  display: grid;
+
+  grid-template-columns:
+    minmax(0, 1.65fr)
+    minmax(280px, 0.7fr);
+
+  gap: 18px;
+
+  align-items: start;
+}
+
+/* =========================================================
+   CHAT BOX
+   ========================================================= */
+
+.coach-chat {
+  min-height: 620px;
+
+  overflow: hidden;
+
+  display: flex;
+
+  flex-direction: column;
+
+  border:
+    1px
+    solid
+    var(--coach-line);
+
+  border-radius: 26px;
+
+  background:
+    rgba(255, 255, 255, 0.88);
+
+  box-shadow:
+    0
+    25px
+    70px
+    rgba(36, 78, 109, 0.09);
+}
+
+/* =========================================================
+   CHAT HEADER
+   ========================================================= */
+
+.chat-header {
+  height: 78px;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 13px;
+
+  padding:
+    0
+    27px;
+
+  border-bottom:
+    1px
+    solid
+    var(--coach-line);
+
+  background:
+    rgba(250, 253, 255, 0.9);
+}
+
+.chat-ai-avatar {
+  width: 40px;
+  height: 40px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 12px;
+
+  background:
+    linear-gradient(
+      145deg,
+      #168fe3,
+      #48c9b5
+    );
+
+  color: white;
+
+  font-size: 11px;
+
+  font-weight: 900;
+
+  box-shadow:
+    0
+    7px
+    20px
+    rgba(22, 143, 227, 0.18);
+}
+
+.chat-header strong {
+  display: block;
+
+  color: var(--coach-navy);
+
+  font-size: 14px;
+}
+
+.chat-header span {
+  display: flex;
+
+  align-items: center;
+
+  gap: 6px;
+
+  margin-top: 3px;
+
+  color: #8aa0b1;
+
+  font-size: 9px;
+}
+
+.chat-header span i {
+  width: 6px;
+  height: 6px;
+
+  border-radius: 50%;
+
+  background: var(--coach-mint);
+
+  box-shadow:
+    0
+    0
+    8px
+    rgba(66, 203, 180, 0.6);
+}
+
+/* =========================================================
+   MESSAGES
+   ========================================================= */
+
+.chat-messages {
+  flex: 1;
+
+  min-height: 450px;
+
+  padding:
+    30px;
+
+  overflow-y: auto;
+
+  background:
+    radial-gradient(
+      circle at 20% 10%,
+      rgba(22, 143, 227, 0.035),
+      transparent 25%
+    );
+}
+
+.chat-message {
+  display: flex;
+
+  align-items: flex-start;
+
+  gap: 10px;
+
+  margin-bottom: 23px;
+
+  animation:
+    messageAppear
+    0.35s
+    ease;
+}
+
+.chat-user {
+  justify-content: flex-end;
+}
+
+.message-avatar {
+  flex-shrink: 0;
+
+  width: 29px;
+  height: 29px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 9px;
+
+  background: var(--coach-navy);
+
+  color: white;
+
+  font-size: 7px;
+
+  font-weight: 900;
+}
+
+.message-bubble {
+  max-width: 72%;
+
+  padding:
+    14px
+    17px;
+
+  border-radius: 14px;
+
+  color: var(--coach-text);
+
+  background:
+    #f0f6fa;
+
+  font-size: 12px;
+
+  line-height: 1.7;
+}
+
+.chat-ai .message-bubble {
+  border-top-left-radius: 4px;
+}
+
+.chat-user .message-bubble {
+  border-top-right-radius: 4px;
+
+  color: white;
+
+  background:
+    linear-gradient(
+      135deg,
+      #168fe3,
+      #238fcf
+    );
+}
+
+/* =========================================================
+   INPUT
+   ========================================================= */
+
+.chat-input-area {
+  min-height: 82px;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 10px;
+
+  padding:
+    16px
+    20px;
+
+  border-top:
+    1px
+    solid
+    var(--coach-line);
+
+  background: white;
+}
+
+.chat-input-area input {
+  flex: 1;
+
+  height: 49px;
+
+  min-width: 0;
+
+  padding:
+    0
+    16px;
+
+  border:
+    1px
+    solid
+    #dbe7ee;
+
+  outline: none;
+
+  border-radius: 12px;
+
+  background:
+    #f8fbfd;
+
+  color: var(--coach-text);
+
+  font-family: inherit;
+
+  font-size: 12px;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.chat-input-area input::placeholder {
+  color: #9aabba;
+}
+
+.chat-input-area input:focus {
+  border-color:
+    rgba(22, 143, 227, 0.45);
+
+  box-shadow:
+    0
+    0
+    0
+    4px
+    rgba(22, 143, 227, 0.07);
+}
+
+.chat-input-area button {
+  width: 49px;
+  height: 49px;
+
+  flex-shrink: 0;
+
+  border: none;
+
+  border-radius: 12px;
+
+  background: var(--coach-navy);
+
+  color: white;
+
+  font-size: 20px;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+.chat-input-area button:hover {
+  transform: translateY(-2px);
+
+  box-shadow:
+    0
+    10px
+    25px
+    rgba(16, 43, 73, 0.2);
+}
+
+/* =========================================================
+   SIDE PANEL
+   ========================================================= */
+
+.coach-side-panel {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 14px;
+}
+
+/* =========================================================
+   MINI PROFILE
+   ========================================================= */
+
+.profile-mini-card {
+  min-height: 125px;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 18px;
+
+  padding: 22px;
+
+  border:
+    1px
+    solid
+    var(--coach-line);
+
+  border-radius: 20px;
+
+  background:
+    rgba(255, 255, 255, 0.88);
+
+  box-shadow:
+    0
+    15px
+    40px
+    rgba(36, 78, 109, 0.06);
+}
+
+.mini-score {
+  width: 70px;
+  height: 70px;
+
+  flex-shrink: 0;
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+
+  justify-content: center;
+
+  border-radius: 50%;
+
+  border:
+    5px
+    solid
+    #dceff3;
+
+  border-top-color:
+    var(--coach-blue);
+
+  border-right-color:
+    var(--coach-mint);
+}
+
+.mini-score strong {
+  color: var(--coach-navy);
+
+  font-size: 22px;
+
+  line-height: 1;
+
+  letter-spacing: -0.06em;
+}
+
+.mini-score span {
+  margin-top: 2px;
+
+  color: #91a5b5;
+
+  font-size: 7px;
+}
+
+.profile-mini-card small {
+  display: block;
+
+  color: #94a8b8;
+
+  font-size: 7px;
+
+  font-weight: 900;
+
+  letter-spacing: 0.14em;
+}
+
+.profile-mini-card > div:last-child > strong {
+  display: block;
+
+  margin-top: 5px;
+
+  color: var(--coach-navy);
+
+  font-size: 15px;
+}
+
+.profile-mini-card p {
+  margin:
+    4px
+    0
+    0;
+
+  color: var(--coach-muted);
+
+  font-size: 9px;
+}
+
+/* =========================================================
+   SUGGESTIONS
+   ========================================================= */
+
+.suggestions-card {
+  padding: 25px;
+
+  border:
+    1px
+    solid
+    var(--coach-line);
+
+  border-radius: 20px;
+
+  background:
+    rgba(255, 255, 255, 0.88);
+
+  box-shadow:
+    0
+    15px
+    40px
+    rgba(36, 78, 109, 0.06);
+}
+
+.suggestions-card > span {
+  color: var(--coach-blue);
+
+  font-size: 8px;
+
+  font-weight: 900;
+
+  letter-spacing: 0.15em;
+}
+
+.suggestions-card h3 {
+  margin:
+    9px
+    0
+    20px;
+
+  color: var(--coach-navy);
+
+  font-size: 20px;
+
+  letter-spacing: -0.035em;
+}
+
+.suggestion-list {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 8px;
+}
+
+.suggestion-list button {
+  width: 100%;
+
+  min-height: 51px;
+
+  display: grid;
+
+  grid-template-columns:
+    23px
+    1fr
+    18px;
+
+  align-items: center;
+
+  gap: 8px;
+
+  padding:
+    8px
+    10px;
+
+  border:
+    1px
+    solid
+    #e3edf2;
+
+  border-radius: 11px;
+
+  background:
+    #f8fbfd;
+
+  color: var(--coach-text);
+
+  text-align: left;
+
+  font-family: inherit;
+
+  font-size: 10px;
+
+  font-weight: 650;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.suggestion-list button:hover {
+  transform: translateX(3px);
+
+  border-color:
+    #bcdceb;
+
+  background:
+    #eef8fd;
+}
+
+.suggestion-list button > span {
+  color: #9badbb;
+
+  font-size: 7px;
+
+  font-weight: 900;
+}
+
+.suggestion-list button b {
+  color: var(--coach-blue);
+
+  font-size: 14px;
+
+  text-align: center;
+}
+
+/* =========================================================
+   CONTEXT CARD
+   ========================================================= */
+
+.coach-signal-card {
+  position: relative;
+
+  min-height: 180px;
+
+  padding: 24px;
+
+  overflow: hidden;
+
+  border-radius: 20px;
+
+  background:
+    linear-gradient(
+      145deg,
+      #102b49,
+      #183b5d
+    );
+
+  color: white;
+
+  box-shadow:
+    0
+    20px
+    45px
+    rgba(16, 43, 73, 0.15);
+}
+
+.coach-signal-card::after {
+  content: "";
+
+  position: absolute;
+
+  width: 150px;
+  height: 150px;
+
+  right: -50px;
+  bottom: -70px;
+
+  border:
+    1px
+    solid
+    rgba(255, 255, 255, 0.1);
+
+  border-radius: 50%;
+}
+
+.signal-icon {
+  width: 35px;
+  height: 35px;
+
+  margin-bottom: 20px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 10px;
+
+  background:
+    rgba(255, 255, 255, 0.08);
+
+  color: #62c9dd;
+
+  font-size: 17px;
+}
+
+.coach-signal-card small {
+  display: block;
+
+  color: #7693aa;
+
+  font-size: 7px;
+
+  font-weight: 900;
+
+  letter-spacing: 0.14em;
+}
+
+.coach-signal-card > strong {
+  display: flex;
+
+  align-items: baseline;
+
+  gap: 6px;
+
+  margin-top: 6px;
+
+  color: white;
+
+  font-size: 25px;
+}
+
+.coach-signal-card > strong span {
+  color: #9bb4c6;
+
+  font-size: 9px;
+
+  font-weight: 500;
+}
+
+.coach-signal-card p {
+  max-width: 260px;
+
+  margin:
+    8px
+    0
+    0;
+
+  color: #9eb5c6;
+
+  font-size: 9px;
+
+  line-height: 1.6;
+}
+
+/* =========================================================
+   CAPABILITIES
+   ========================================================= */
+
+.coach-capabilities {
+  margin-top: 70px;
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(
+      4,
+      1fr
+    );
+
+  border-top:
+    1px
+    solid
+    var(--coach-line);
+
+  border-bottom:
+    1px
+    solid
+    var(--coach-line);
+}
+
+.capability-item {
+  min-height: 190px;
+
+  padding:
+    27px
+    25px;
+
+  border-right:
+    1px
+    solid
+    var(--coach-line);
+}
+
+.capability-item:last-child {
+  border-right: none;
+}
+
+.capability-item > span {
+  color: #9badbb;
+
+  font-size: 8px;
+
+  font-weight: 900;
+}
+
+.capability-item strong {
+  display: block;
+
+  margin-top: 24px;
+
+  color: var(--coach-navy);
+
+  font-size: 15px;
+
+  letter-spacing: -0.02em;
+}
+
+.capability-item p {
+  margin:
+    8px
+    0
+    0;
+
+  color: var(--coach-muted);
+
+  font-size: 10px;
+
+  line-height: 1.65;
+}
+
+/* =========================================================
+   FOOTER
+   ========================================================= */
+
+.coach-footer {
+  position: relative;
+  z-index: 2;
+
+  width:
+    min(
+      1250px,
+      calc(100% - 48px)
+    );
+
+  min-height: 80px;
+
+  margin: 0 auto;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  border-top:
+    1px
+    solid
+    var(--coach-line);
+
+  color: #8da1b1;
+
+  font-size: 8px;
+
+  font-weight: 900;
+
+  letter-spacing: 0.14em;
+}
+
+/* =========================================================
+   ANIMATION
+   ========================================================= */
+
+@keyframes messageAppear {
+  from {
+    opacity: 0;
+
+    transform:
+      translateY(7px);
+  }
+
+  to {
+    opacity: 1;
+
+    transform:
+      translateY(0);
+  }
+}
+
+/* =========================================================
+   TABLET
+   ========================================================= */
+
+@media (max-width: 1000px) {
+
+  .coach-header,
+  .coach-main,
+  .coach-footer {
+    width:
+      min(
+        calc(100% - 32px),
+        900px
+      );
+  }
+
+  .coach-chat-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .coach-side-panel {
+    display: grid;
+
+    grid-template-columns:
+      1fr
+      1fr;
+  }
+
+  .coach-signal-card {
+    grid-column: 1 / -1;
+  }
+
+  .coach-capabilities {
+    grid-template-columns:
+      1fr
+      1fr;
+  }
+
+  .capability-item:nth-child(2) {
+    border-right: none;
+  }
+
+  .capability-item:nth-child(3),
+  .capability-item:nth-child(4) {
+    border-top:
+      1px
+      solid
+      var(--coach-line);
+  }
+}
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 650px) {
+
+  .coach-header,
+  .coach-main,
+  .coach-footer {
+    width:
+      calc(100% - 24px);
+  }
+
+  .coach-header {
+    height: 72px;
+  }
+
+  .coach-brand small {
+    display: none;
+  }
+
+  .coach-main {
+    padding-top: 40px;
+  }
+
+  .coach-intro h1 {
+    font-size: 51px;
+  }
+
+  .coach-intro p {
+    font-size: 12px;
+  }
+
+  .coach-chat {
+    min-height: 600px;
+
+    border-radius: 20px;
+  }
+
+  .chat-messages {
+    min-height: 430px;
+
+    padding: 22px 17px;
+  }
+
+  .message-bubble {
+    max-width: 82%;
+
+    font-size: 11px;
+  }
+
+  .chat-input-area {
+    padding: 12px;
+  }
+
+  .coach-side-panel {
+    display: flex;
+  }
+
+  .coach-capabilities {
+    grid-template-columns: 1fr;
+  }
+
+  .capability-item {
+    min-height: 145px;
+
+    border-right: none !important;
+
+    border-bottom:
+      1px
+      solid
+      var(--coach-line);
+  }
+
+  .capability-item:last-child {
+    border-bottom: none;
+  }
+
+  .coach-footer {
+    min-height: 110px;
+
+    flex-direction: column;
+
+    justify-content: center;
+
+    gap: 9px;
+
+    text-align: center;
+  }
+}
+
+/* =========================================================
+   REDUCED MOTION
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+  *,
+  *::before,
+  *::after {
+    animation:
+      none !important;
+
+    transition:
+      none !important;
+  }
+}
+/* =========================================================
+   DESIGN POLISH: scoped score ring
+   (other pages also define .mini-score; scope it to this page)
+   ========================================================= */
+
+.career-coach-page .mini-score {
+  width: 76px !important;
+  height: 76px !important;
+  margin: 0 !important;
+  gap: 0 !important;
+  padding: 0 !important;
+  flex: 0 0 76px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border: 0 !important;
+  border-radius: 50% !important;
+  background:
+    radial-gradient(circle, #ffffff 60%, transparent 61%),
+    conic-gradient(#168fe3 0deg, #1fbe9a 260deg, #e3edf3 260deg) !important;
+  box-shadow: 0 8px 20px rgba(22, 143, 227, 0.14) !important;
+}
+
+.career-coach-page .mini-score strong {
+  font-size: 22px;
+  line-height: 1;
+  letter-spacing: -0.03em;
+}
+
+.career-coach-page .mini-score span {
+  margin-top: 3px;
+  font-size: 9px;
+  font-weight: 700;
+}

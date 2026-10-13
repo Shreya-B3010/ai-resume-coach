@@ -1,0 +1,27 @@
+# Local secrets and environment configuration
+.env
+.env.*
+!.env.example
+**/.env
+**/.env.*
+!**/.env.example
+
+# Dependencies and generated output
+**/node_modules/
+**/dist/
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*.log
+*.db
+*.sqlite
+*.sqlite3
+
+# Local project created separately during this conversation
+ecommerce-analytics-dashboard/
+
+# Editor and OS files
+.vscode/
+.idea/
+.DS_Store

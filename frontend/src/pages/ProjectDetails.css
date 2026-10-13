@@ -1,0 +1,600 @@
+.project-details-page {
+  min-height: 100vh;
+  background: #f7fbff;
+  color: #142033;
+}
+
+.project-details-header {
+  background: rgba(255, 255, 255, 0.95);
+  border-bottom: 1px solid #e4edf6;
+  position: sticky;
+  top: 0;
+  z-index: 20;
+}
+
+.project-details-header-inner {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 18px 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.project-details-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.project-details-logo-blue {
+  color: #1683ff;
+  margin-left: 3px;
+}
+
+.project-details-logo-mark {
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  height: 24px;
+}
+
+.project-details-logo-mark span {
+  display: block;
+  width: 5px;
+  border-radius: 4px;
+  background: #1683ff;
+}
+
+.project-details-logo-mark span:nth-child(1) {
+  height: 12px;
+}
+
+.project-details-logo-mark span:nth-child(2) {
+  height: 19px;
+}
+
+.project-details-logo-mark span:nth-child(3) {
+  height: 15px;
+}
+
+.project-details-back {
+  text-decoration: none;
+  color: #526276;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.project-details-back:hover {
+  color: #1683ff;
+}
+
+.project-details-hero {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 76px 28px 62px;
+}
+
+.project-details-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  color: #1683ff;
+  margin-bottom: 24px;
+}
+
+.project-details-eyebrow span {
+  width: 8px;
+  height: 8px;
+  background: #1683ff;
+  border-radius: 50%;
+}
+
+.project-details-target {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 5px;
+  background: #eaf5ff;
+  border: 1px solid #d6eaff;
+  padding: 12px 17px;
+  border-radius: 12px;
+  margin-bottom: 28px;
+}
+
+.project-details-target span {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  color: #66809b;
+}
+
+.project-details-target strong {
+  color: #1677df;
+  font-size: 14px;
+}
+
+.project-details-hero h1 {
+  max-width: 850px;
+  font-size: clamp(42px, 6vw, 76px);
+  line-height: 0.98;
+  letter-spacing: -0.045em;
+  margin: 0 0 24px;
+}
+
+.project-details-hero > p {
+  max-width: 760px;
+  color: #5e6e82;
+  font-size: 18px;
+  line-height: 1.7;
+  margin: 0 0 28px;
+}
+
+.project-details-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+}
+
+.project-details-tags span {
+  padding: 9px 13px;
+  background: #ffffff;
+  border: 1px solid #dce8f4;
+  border-radius: 8px;
+  color: #45576c;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.project-details-content {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 0 28px 80px;
+}
+
+.project-overview-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+  margin-bottom: 80px;
+}
+
+.project-overview-card {
+  background: #ffffff;
+  border: 1px solid #e1eaf3;
+  border-radius: 18px;
+  padding: 25px;
+}
+
+.project-overview-card small,
+.project-details-heading small,
+.project-showcase small,
+.project-details-action small {
+  display: block;
+  color: #1683ff;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  margin-bottom: 11px;
+}
+
+.project-overview-card strong {
+  display: block;
+  font-size: 21px;
+  margin-bottom: 10px;
+}
+
+.project-overview-card p {
+  color: #68778a;
+  line-height: 1.6;
+  margin: 0;
+  font-size: 14px;
+}
+
+.project-details-section {
+  margin-bottom: 85px;
+}
+
+.project-details-heading {
+  max-width: 720px;
+  margin-bottom: 32px;
+}
+
+.project-details-heading h2 {
+  font-size: clamp(30px, 4vw, 48px);
+  letter-spacing: -0.035em;
+  line-height: 1.05;
+  margin: 0 0 14px;
+}
+
+.project-details-heading p {
+  color: #68778a;
+  line-height: 1.7;
+  margin: 0;
+}
+
+.project-problem-card {
+  display: flex;
+  gap: 22px;
+  background: #ffffff;
+  border: 1px solid #dce8f4;
+  border-radius: 22px;
+  padding: 34px;
+}
+
+.project-problem-icon {
+  width: 48px;
+  height: 48px;
+  flex: 0 0 48px;
+  display: grid;
+  place-items: center;
+  border-radius: 14px;
+  background: #eaf5ff;
+  color: #1683ff;
+  font-size: 22px;
+}
+
+.project-problem-card h3 {
+  margin: 0 0 12px;
+  font-size: 21px;
+}
+
+.project-problem-card p {
+  color: #657589;
+  line-height: 1.7;
+  margin: 0 0 10px;
+}
+
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+.feature-card {
+  background: #ffffff;
+  border: 1px solid #e1eaf3;
+  border-radius: 18px;
+  padding: 25px;
+}
+
+.feature-card > span {
+  color: #1683ff;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.feature-card h3 {
+  margin: 24px 0 10px;
+  font-size: 18px;
+}
+
+.feature-card p {
+  color: #68778a;
+  font-size: 14px;
+  line-height: 1.65;
+  margin: 0;
+}
+
+.project-skill-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 15px;
+}
+
+.project-skill-card {
+  background: #f0f8ff;
+  border: 1px solid #dcecf9;
+  border-radius: 16px;
+  padding: 23px;
+}
+
+.project-skill-card span {
+  display: block;
+  color: #1683ff;
+  font-size: 11px;
+  font-weight: 800;
+  margin-bottom: 18px;
+}
+
+.project-skill-card strong {
+  display: block;
+  font-size: 16px;
+  margin-bottom: 9px;
+}
+
+.project-skill-card p {
+  color: #68778a;
+  font-size: 13px;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.implementation-timeline {
+  border-left: 2px solid #dce8f4;
+  margin-left: 22px;
+  padding-left: 34px;
+}
+
+.implementation-step {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr;
+  background: #ffffff;
+  border: 1px solid #e1eaf3;
+  border-radius: 18px;
+  padding: 27px;
+  margin-bottom: 18px;
+}
+
+.implementation-number {
+  position: absolute;
+  left: -60px;
+  top: 23px;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: #1683ff;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 800;
+  box-shadow: 0 0 0 6px #f7fbff;
+}
+
+.implementation-step small {
+  color: #1683ff;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+}
+
+.implementation-step h3 {
+  margin: 8px 0 9px;
+  font-size: 20px;
+}
+
+.implementation-step p {
+  color: #68778a;
+  line-height: 1.65;
+  margin: 0;
+}
+
+.project-showcase {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+  background: #eaf5ff;
+  border: 1px solid #d4e9fa;
+  border-radius: 25px;
+  padding: 40px;
+  margin-bottom: 70px;
+}
+
+.project-showcase h2 {
+  max-width: 550px;
+  font-size: 34px;
+  line-height: 1.08;
+  letter-spacing: -0.03em;
+  margin: 0 0 14px;
+}
+
+.project-showcase > div:first-child p {
+  color: #5e7084;
+  line-height: 1.7;
+  margin: 0;
+}
+
+.resume-story-card {
+  background: #ffffff;
+  border: 1px solid #d7e6f3;
+  border-radius: 18px;
+  padding: 26px;
+  align-self: center;
+}
+
+.resume-story-card span {
+  display: block;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  color: #1683ff;
+  margin-bottom: 15px;
+}
+
+.resume-story-card p {
+  color: #526276;
+  line-height: 1.75;
+  margin: 0;
+}
+
+.project-details-action {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 35px;
+  background: #ffffff;
+  border: 1px solid #dce8f4;
+  border-radius: 24px;
+  padding: 38px;
+}
+
+.project-details-action h2 {
+  margin: 0 0 10px;
+  font-size: 30px;
+  letter-spacing: -0.025em;
+}
+
+.project-details-action p {
+  color: #68778a;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.project-details-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.project-details-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  min-height: 52px;
+  padding: 0 20px;
+  border-radius: 10px;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 800;
+  transition: 0.2s ease;
+}
+
+.project-details-button.primary {
+  background: #1683ff;
+  color: #ffffff;
+}
+
+.project-details-button.primary:hover {
+  transform: translateY(-2px);
+}
+
+.project-details-button.secondary {
+  background: #f2f6fa;
+  color: #405269;
+  border: 1px solid #dce6ef;
+}
+
+.project-details-empty {
+  min-height: calc(100vh - 80px);
+  display: grid;
+  place-items: center;
+  text-align: center;
+  padding: 40px 25px;
+}
+
+.project-details-empty > div {
+  max-width: 600px;
+}
+
+.project-details-empty > div > span {
+  color: #1683ff;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.15em;
+}
+
+.project-details-empty h1 {
+  font-size: 48px;
+  margin: 15px 0;
+}
+
+.project-details-empty p {
+  color: #68778a;
+  line-height: 1.7;
+  margin-bottom: 25px;
+}
+
+@media (max-width: 900px) {
+  .project-overview-grid,
+  .feature-grid,
+  .project-skill-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .project-showcase {
+    grid-template-columns: 1fr;
+  }
+
+  .project-details-action {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 650px) {
+  .project-details-header-inner,
+  .project-details-hero,
+  .project-details-content {
+    padding-left: 18px;
+    padding-right: 18px;
+  }
+
+  .project-details-back {
+    font-size: 12px;
+  }
+
+  .project-details-hero {
+    padding-top: 50px;
+  }
+
+  .project-details-hero h1 {
+    font-size: 42px;
+  }
+
+  .project-overview-grid,
+  .feature-grid,
+  .project-skill-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .project-problem-card {
+    flex-direction: column;
+    padding: 25px;
+  }
+
+  .implementation-timeline {
+    margin-left: 12px;
+    padding-left: 25px;
+  }
+
+  .implementation-number {
+    left: -45px;
+    width: 34px;
+    height: 34px;
+    font-size: 10px;
+  }
+
+  .project-showcase {
+    padding: 25px;
+  }
+
+  .project-showcase h2 {
+    font-size: 28px;
+  }
+
+  .project-details-action {
+    padding: 27px;
+  }
+
+  .project-details-buttons {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .project-details-button {
+    width: 100%;
+  }
+}
+/* =========================================================
+   DESIGN POLISH
+   ========================================================= */
+
+/* Eyebrow and target chip were sitting on one line and colliding */
+.project-details-hero .project-details-eyebrow {
+  display: flex;
+  margin-bottom: 18px;
+}
+
+.project-details-hero .project-details-target {
+  display: flex;
+  width: fit-content;
+  margin-bottom: 26px;
+}

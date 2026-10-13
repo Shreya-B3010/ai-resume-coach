@@ -1,0 +1,236 @@
+/* =========================================================
+   SHARED APP HEADER
+   One navbar for the whole product.
+   ========================================================= */
+
+.ah {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: saturate(160%) blur(16px);
+  -webkit-backdrop-filter: saturate(160%) blur(16px);
+  border-bottom: 1px solid var(--line);
+}
+
+.ah .ah-inner {
+  width: min(var(--ah-w, 1180px), calc(100% - 48px));
+  height: 68px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 28px;
+}
+
+/* ---- Brand ---- */
+.ah .ah-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 11px;
+  text-decoration: none;
+  color: var(--ink);
+  flex-shrink: 0;
+}
+
+.ah .ah-brand-mark {
+  width: 36px;
+  height: 36px;
+  border-radius: 11px;
+  background: linear-gradient(135deg, var(--sky-500), var(--mint-500));
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  box-shadow: 0 6px 16px rgba(22, 143, 227, 0.28);
+  transition: transform 0.25s ease;
+}
+
+.ah .ah-brand:hover .ah-brand-mark {
+  transform: rotate(-6deg) scale(1.05);
+}
+
+.ah .ah-brand-mark i {
+  display: block;
+  width: 3px;
+  border-radius: 3px;
+  background: #fff;
+}
+.ah .ah-brand-mark i:nth-child(1) { height: 9px; }
+.ah .ah-brand-mark i:nth-child(2) { height: 17px; }
+.ah .ah-brand-mark i:nth-child(3) { height: 12px; }
+
+.ah .ah-brand-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+}
+
+.ah .ah-brand-text strong {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--ink);
+}
+
+.ah .ah-brand-text strong em {
+  font-style: normal;
+  color: var(--sky-600);
+}
+
+.ah .ah-brand-text small {
+  margin-top: 3px;
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+/* ---- Nav ---- */
+.ah .ah-nav {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin: 0 auto;
+  padding: 4px;
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+}
+
+.ah .ah-link {
+  position: relative;
+  padding: 7px 14px;
+  border-radius: 999px;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--ink-2);
+  text-decoration: none;
+  white-space: nowrap;
+  transition: color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+}
+
+.ah .ah-link:hover {
+  color: var(--ink);
+  background: rgba(22, 143, 227, 0.08);
+}
+
+.ah .ah-link.is-active {
+  color: var(--sky-700);
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(16, 43, 73, 0.08), 0 0 0 1px var(--line);
+}
+
+/* ---- Actions slot ---- */
+.ah .ah-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+  min-width: 0;
+}
+
+/* Shared header buttons used by every page */
+.ah .ah-btn {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  height: 38px;
+  padding: 0 16px;
+  border-radius: var(--radius-sm);
+  font-family: inherit;
+  font-size: 13.5px;
+  font-weight: 700;
+  line-height: 1;
+  text-decoration: none;
+  cursor: pointer;
+  white-space: nowrap;
+  border: 1px solid var(--line-strong);
+  background: #fff;
+  color: var(--ink);
+  transition: transform 0.2s ease, box-shadow 0.2s ease,
+    background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.ah .ah-btn:hover {
+  transform: translateY(-1px);
+  border-color: var(--sky-500);
+  color: var(--sky-700);
+  box-shadow: var(--shadow-sm);
+}
+
+.ah .ah-btn:active {
+  transform: translateY(0);
+}
+
+.ah .ah-btn--primary {
+  background: var(--sky-600);
+  border-color: var(--sky-600);
+  color: #fff;
+  box-shadow: 0 6px 16px rgba(22, 143, 227, 0.28);
+}
+
+.ah .ah-btn--primary:hover {
+  background: var(--sky-700);
+  border-color: var(--sky-700);
+  color: #fff;
+  box-shadow: 0 10px 22px rgba(22, 143, 227, 0.34);
+}
+
+.ah .ah-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+.ah .ah-status i {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--mint-500);
+  box-shadow: 0 0 0 3px rgba(31, 190, 154, 0.2);
+}
+
+/* ---- Responsive ---- */
+@media (max-width: 1100px) {
+  .ah .ah-status { display: none; }
+}
+
+@media (max-width: 980px) {
+  .ah .ah-inner {
+    height: auto;
+    flex-wrap: wrap;
+    gap: 10px 14px;
+    padding: 12px 0 10px;
+  }
+
+  .ah .ah-brand { order: 1; }
+  .ah .ah-actions { order: 2; margin-left: auto; }
+
+  .ah .ah-nav {
+    order: 3;
+    width: 100%;
+    margin: 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+    border-radius: 14px;
+  }
+
+  .ah .ah-nav::-webkit-scrollbar { display: none; }
+  .ah .ah-link { flex: 1 0 auto; text-align: center; }
+}
+
+@media (max-width: 520px) {
+  .ah .ah-inner { width: calc(100% - 28px); }
+  .ah .ah-brand-text small { display: none; }
+  .ah .ah-btn { height: 34px; padding: 0 12px; font-size: 12.5px; }
+}
