@@ -1,17 +1,33 @@
-const mongoose = require("mongoose");
+const { Pool } = require("pg");
+
+if (!process.env.DATABASE_URL) {
+  throw new Error("DATABASE_URL is not configured.");
+}
+
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: { rejectUnauthorized: true },
+  connectionTimeoutMillis: 10000,
+});
 
 const connectDB = async () => {
   try {
-    const conn = await mongoose.connect(process.env.MONGO_URI, {
-      serverSelectionTimeoutMS: 5000,
-    });
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS users (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        name TEXT NOT NULL,
+        email TEXT NOT NULL UNIQUE,
+        password TEXT NOT NULL,
+        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+      )
+    `);
 
-    console.log(`MongoDB connected: ${conn.connection.host}`);
-    return conn;
+    await pool.query("SELECT 1");
+    console.log("Supabase PostgreSQL connected.");
   } catch (error) {
-    console.error("MongoDB connection error:", error.message);
+    console.error("Supabase PostgreSQL connection error:", error.message);
     process.exit(1);
   }
 };
 
-module.exports = connectDB;
+module.exports = { connectDB, pool };

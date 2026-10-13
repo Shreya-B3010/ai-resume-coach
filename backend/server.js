@@ -5,17 +5,36 @@ const cors = require("cors");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const multer = require("multer");
-const connectDB = require("./config/db");
-const User = require("./models/User");
+const { connectDB } = require("./config/db");
+const { createUser, findUserByEmail, findUserById } = require("./models/User");
 const authMiddleware = require("./middleware/auth");
 const { PDFParse } = require("pdf-parse");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+const frontendOrigins = (process.env.FRONTEND_ORIGINS || "")
+  .split(",")
+  .map((origin) => origin.trim())
+  .filter(Boolean)
+  .map((origin) =>
+    origin.startsWith("http://") || origin.startsWith("https://")
+      ? origin
+      : `https://${origin}`
+  );
+const allowedOrigins = new Set([
+  "http://localhost:5173",
+  ...frontendOrigins,
+]);
 
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin(origin, callback) {
+      if (!origin || allowedOrigins.has(origin)) {
+        return callback(null, true);
+      }
+
+      return callback(new Error("Origin is not allowed by CORS."));
+    },
   })
 );
 
@@ -77,7 +96,7 @@ app.post("/api/signup", async (req, res) => {
     }
 
     const normalizedEmail = email.trim().toLowerCase();
-    const existingUser = await User.findOne({ email: normalizedEmail });
+    const existingUser = await findUserByEmail(normalizedEmail);
 
     if (existingUser) {
       return res.status(409).json({
@@ -87,14 +106,14 @@ app.post("/api/signup", async (req, res) => {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    const user = await User.create({
+    const user = await createUser({
       name: name.trim(),
       email: normalizedEmail,
       password: hashedPassword,
     });
 
     const token = jwt.sign(
-      { id: user._id.toString(), email: user.email, name: user.name },
+      { id: user.id, email: user.email, name: user.name },
       process.env.JWT_SECRET,
       { expiresIn: "7d" }
     );
@@ -104,7 +123,7 @@ app.post("/api/signup", async (req, res) => {
       message: "User registered successfully.",
       token,
       user: {
-        id: user._id,
+        id: user.id,
         name: user.name,
         email: user.email,
       },
@@ -112,7 +131,7 @@ app.post("/api/signup", async (req, res) => {
   } catch (error) {
     console.error("Signup error:", error);
 
-    if (error.code === 11000) {
+    if (error.code === "23505") {
       return res.status(409).json({
         success: false,
         message: "An account with this email already exists.",
@@ -150,9 +169,7 @@ app.post("/api/login", async (req, res) => {
       });
     }
 
-    const user = await User.findOne({
-      email: email.trim().toLowerCase(),
-    });
+    const user = await findUserByEmail(email.trim().toLowerCase());
 
     if (!user || !(await bcrypt.compare(password, user.password))) {
       return res.status(401).json({
@@ -162,7 +179,7 @@ app.post("/api/login", async (req, res) => {
     }
 
     const token = jwt.sign(
-      { id: user._id.toString(), email: user.email, name: user.name },
+      { id: user.id, email: user.email, name: user.name },
       process.env.JWT_SECRET,
       { expiresIn: "7d" }
     );
@@ -172,7 +189,7 @@ app.post("/api/login", async (req, res) => {
       message: "Login successful.",
       token,
       user: {
-        id: user._id,
+        id: user.id,
         name: user.name,
         email: user.email,
       },
@@ -188,7 +205,7 @@ app.post("/api/login", async (req, res) => {
 
 app.get("/api/me", authMiddleware, async (req, res) => {
   try {
-    const user = await User.findById(req.user.id).select("-password");
+    const user = await findUserById(req.user.id);
 
     if (!user) {
       return res.status(404).json({
