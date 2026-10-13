@@ -12,6 +12,7 @@ function ResumeAnalyzer() {
   const [status, setStatus] = useState("idle");
   const [analysis, setAnalysis] = useState(null);
   const [error, setError] = useState("");
+  const [requiresSignIn, setRequiresSignIn] = useState(false);
 
   const [coachMessage, setCoachMessage] = useState("");
   const [isCoachSending, setIsCoachSending] = useState(false);
@@ -39,6 +40,13 @@ function ResumeAnalyzer() {
       return;
     }
 
+    if (!sessionStorage.getItem("authToken")) {
+      setRequiresSignIn(true);
+      setStatus("error");
+      setError("Please sign in before analyzing your resume.");
+      return;
+    }
+
     setFile(selectedFile);
     setStatus("analyzing");
     setAnalysis(null);
@@ -61,6 +69,11 @@ function ResumeAnalyzer() {
       const data = await response.json();
 
       if (!response.ok || !data.success) {
+        if (response.status === 401) {
+          setRequiresSignIn(true);
+          throw new Error("Your sign-in session has expired. Please sign in again.");
+        }
+
         throw new Error(
           data.message || "Resume analysis failed."
         );
@@ -150,6 +163,7 @@ function ResumeAnalyzer() {
     setFile(null);
     setAnalysis(null);
     setError("");
+    setRequiresSignIn(false);
     setStatus("idle");
     setCoachMessage("");
 
@@ -1204,13 +1218,25 @@ function ResumeAnalyzer() {
                   "Please check your file and try uploading it again."}
               </p>
 
-              <button
-                className="choose-file-btn"
-                onClick={startAgain}
-              >
-                Try Again
-                <span>→</span>
-              </button>
+              {requiresSignIn ? (
+                <button
+                  className="choose-file-btn"
+                  onClick={() => {
+                    window.location.href = "/login";
+                  }}
+                >
+                  Sign in
+                  <span>→</span>
+                </button>
+              ) : (
+                <button
+                  className="choose-file-btn"
+                  onClick={startAgain}
+                >
+                  Try Again
+                  <span>→</span>
+                </button>
+              )}
 
             </div>
 
