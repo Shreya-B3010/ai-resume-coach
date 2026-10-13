@@ -11,6 +11,7 @@ function ResumeAnalyzer() {
   const [file, setFile] = useState(null);
   const [status, setStatus] = useState("idle");
   const [analysis, setAnalysis] = useState(null);
+  const [analysisMode, setAnalysisMode] = useState("");
   const [error, setError] = useState("");
   const [requiresSignIn, setRequiresSignIn] = useState(false);
 
@@ -93,8 +94,10 @@ function ResumeAnalyzer() {
         "resumeAnalysis",
         JSON.stringify(data.analysis)
       );
+      sessionStorage.setItem("resumeAnalysisMode", data.mode || "offline");
 
       setAnalysis(data.analysis);
+      setAnalysisMode(data.mode || "offline");
       setStatus("complete");
 
       setCoachMessages([
@@ -162,6 +165,7 @@ function ResumeAnalyzer() {
   const startAgain = () => {
     setFile(null);
     setAnalysis(null);
+    setAnalysisMode("");
     setError("");
     setRequiresSignIn(false);
     setStatus("idle");
@@ -300,9 +304,11 @@ function ResumeAnalyzer() {
             skills, experience, projects and ATS readiness.
           </p>
           <p className="resume-ai-disclosure">
-            Resume text is sent to Google Gemini for analysis. The free tier
-            has usage limits and Google may use submitted content to improve
-            its products. Only upload a file you have permission to share.
+            When Gemini is configured, resume text is sent to Google for
+            analysis. Otherwise, the backend uses local, rule-based checks and
+            does not send your resume to an AI provider. Google may use
+            submitted content to improve its products when the Gemini free
+            tier is used. Only upload a file you have permission to share.
           </p>
 
         </section>
@@ -659,6 +665,12 @@ function ResumeAnalyzer() {
                   We've analyzed the structure and signals in
                   your resume. Here's your first look.
                 </p>
+                {analysisMode === "offline" && (
+                  <p>
+                    Offline analysis: based on resume structure and detected
+                    keywords; not AI-generated.
+                  </p>
+                )}
 
               </div>
 

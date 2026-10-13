@@ -126,9 +126,11 @@ function CareerCoach() {
             build, and where to go next.
           </p>
           <p>
-            Career questions and resume context are sent to Google Gemini.
-            The free tier has usage limits, and Google may use submitted
-            content to improve its products.
+            When Gemini is configured, career questions and resume context
+            are sent to Google. Otherwise, the coach uses offline,
+            profile-based guidance that is not AI-generated. Google may use
+            submitted content to improve its products when the Gemini free
+            tier is used.
           </p>
 
         </section>
