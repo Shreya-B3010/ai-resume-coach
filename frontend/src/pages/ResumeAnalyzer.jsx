@@ -2,6 +2,8 @@ import { useRef, useState } from "react";
 import "./ResumeAnalyzer.css";
 import AppHeader from "../components/AppHeader";
 
+const API_URL = import.meta.env.VITE_API_ORIGIN || "http://localhost:5000";
+
 function ResumeAnalyzer() {
   const fileInputRef = useRef(null);
 
@@ -43,7 +45,7 @@ function ResumeAnalyzer() {
 
     try {
       const response = await fetch(
-        "http://localhost:5000/api/analyze-resume",
+        `${API_URL}/api/analyze-resume`,
         {
           method: "POST",
           headers: {
