@@ -1,9 +1,12 @@
 import { useState } from "react";
 import "./CareerCoach.css";
 import AppHeader from "../components/AppHeader";
+import { requestAI } from "../lib/ai";
 
 function CareerCoach() {
   const [message, setMessage] = useState("");
+  const [isSending, setIsSending] = useState(false);
+  const [error, setError] = useState("");
   const [messages, setMessages] = useState([
     {
       role: "ai",
@@ -34,101 +37,49 @@ function CareerCoach() {
     ? analysis.skills
     : [];
 
-  const recommendedSkills = Array.isArray(
-    analysis.recommendedSkills
-  )
-    ? analysis.recommendedSkills
-    : [];
-
   const score = Number(
     analysis.resumeScore || 0
   );
 
-  const answerQuestion = (question) => {
-    const q = question.toLowerCase();
-
-    if (
-      q.includes("learn") ||
-      q.includes("skill") ||
-      q.includes("next")
-    ) {
-      if (recommendedSkills.length > 0) {
-        return `Based on your resume, I would focus next on ${recommendedSkills
-          .slice(0, 4)
-          .join(", ")}. You already have a foundation in ${skills
-          .slice(0, 4)
-          .join(", ")}, so these skills can help you build more depth.`;
-      }
-
-      return "Start by strengthening your programming fundamentals, SQL, Git/GitHub, data structures, and one specialization such as Machine Learning.";
-    }
-
-    if (
-      q.includes("internship") ||
-      q.includes("job") ||
-      q.includes("ready")
-    ) {
-      if (score >= 80) {
-        return `Your current resume score is ${score}/100, which shows a solid foundation. Before applying, focus on strengthening your projects, adding measurable outcomes, and preparing for technical interviews.`;
-      }
-
-      return `Your current resume score is ${score}/100. You have a foundation, but I recommend improving your projects, technical skills, and resume impact before applying widely.`;
-    }
-
-    if (
-      q.includes("project") ||
-      q.includes("projects")
-    ) {
-      return "Build projects that demonstrate the skills you want recruiters to notice. For an AIML profile, consider projects involving Machine Learning, data analysis, recommendation systems, computer vision, NLP, or deployment.";
-    }
-
-    if (
-      q.includes("resume") ||
-      q.includes("improve")
-    ) {
-      return `Your resume currently has a score of ${score}/100. Focus on measurable project results, stronger action verbs, relevant technical keywords, and clear descriptions of what you personally built.`;
-    }
-
-    if (
-      q.includes("python")
-    ) {
-      return "Python is a strong foundation for AIML. After the basics, focus on NumPy, Pandas, Scikit-learn, data preprocessing, model evaluation, and building end-to-end projects.";
-    }
-
-    if (
-      q.includes("ml") ||
-      q.includes("machine learning")
-    ) {
-      return "For Machine Learning, build your foundation in statistics, data preprocessing, supervised and unsupervised learning, model evaluation, feature engineering, and practical projects.";
-    }
-
-    return `I've analyzed your resume and detected ${skills.length} technical skills. Ask me about your next skills, internships, projects, resume improvement, or Machine Learning preparation.`;
-  };
-
-  const sendMessage = (text = message) => {
+  const sendMessage = async (text = message) => {
     const trimmed = text.trim();
 
-    if (!trimmed) {
+    if (!trimmed || isSending) {
       return;
     }
 
+    setError("");
+    setIsSending(true);
     const userMessage = {
       role: "user",
       text: trimmed
     };
 
-    const aiMessage = {
-      role: "ai",
-      text: answerQuestion(trimmed)
-    };
-
     setMessages((previous) => [
       ...previous,
-      userMessage,
-      aiMessage
+      userMessage
     ]);
-
     setMessage("");
+
+    try {
+      const result = await requestAI("/api/career-coach", {
+        message: trimmed,
+        resumeText,
+        analysis,
+        history: messages.slice(-8).map((item) => ({
+          role: item.role === "ai" ? "assistant" : "user",
+          content: item.text,
+        })),
+      });
+      setMessages((previous) => [
+        ...previous,
+        { role: "ai", text: result.answer },
+      ]);
+    } catch (requestError) {
+      setError(requestError.message);
+    } finally {
+      setIsSending(false);
+    }
   };
 
   const suggestedQuestions = [
@@ -231,7 +182,16 @@ function CareerCoach() {
                 )
               )}
 
+              {isSending && (
+                <div className="chat-message chat-ai">
+                  <div className="message-avatar">AI</div>
+                  <div className="message-bubble">Thinking...</div>
+                </div>
+              )}
+
             </div>
+
+            {error && <p role="alert">{error}</p>}
 
             <div className="chat-input-area">
 
@@ -243,19 +203,19 @@ function CareerCoach() {
                   )
                 }
                 onKeyDown={(event) => {
-                  if (
-                    event.key === "Enter"
-                  ) {
+                  if (event.key === "Enter" && !event.shiftKey) {
+                    event.preventDefault();
                     sendMessage();
                   }
                 }}
+                disabled={isSending}
                 placeholder="Ask about your career..."
               />
 
               <button
-                onClick={() =>
-                  sendMessage()
-                }
+                onClick={() => sendMessage()}
+                disabled={isSending || !message.trim()}
+                aria-label="Send message"
               >
                 →
               </button>
@@ -317,6 +277,7 @@ function CareerCoach() {
 
                     <button
                       key={index}
+                      disabled={isSending}
                       onClick={() =>
                         sendMessage(
                           question

@@ -1,6 +1,7 @@
 import { useRef, useState } from "react";
 import "./ResumeAnalyzer.css";
 import AppHeader from "../components/AppHeader";
+import { requestAI } from "../lib/ai";
 
 const API_URL = import.meta.env.VITE_API_ORIGIN || "http://localhost:5000";
 
@@ -13,6 +14,8 @@ function ResumeAnalyzer() {
   const [error, setError] = useState("");
 
   const [coachMessage, setCoachMessage] = useState("");
+  const [isCoachSending, setIsCoachSending] = useState(false);
+  const [coachError, setCoachError] = useState("");
 
   const [coachMessages, setCoachMessages] = useState([
     {
@@ -195,12 +198,6 @@ function ResumeAnalyzer() {
     ? analysis.improvementAreas
     : [];
 
-  const recommendedSkills = Array.isArray(
-    analysis?.recommendedSkills
-  )
-    ? analysis.recommendedSkills
-    : [];
-
   const getScoreClass = () => {
     if (score >= 85) return "score-high";
     if (score >= 70) return "score-good";
@@ -209,118 +206,38 @@ function ResumeAnalyzer() {
     return "score-low";
   };
 
-  /* =========================================================
-     CAREER COACH
-  ========================================================= */
-
-  const answerCoachQuestion = (question) => {
-    const q = question.toLowerCase();
-
-    if (
-      q.includes("learn") ||
-      q.includes("skill") ||
-      q.includes("next")
-    ) {
-      if (recommendedSkills.length > 0) {
-        return `Based on your resume analysis, I recommend focusing next on ${recommendedSkills
-          .slice(0, 4)
-          .join(", ")}. You already have a foundation in ${skills
-          .slice(0, 4)
-          .join(", ")}, so building depth in these areas can strengthen your profile.`;
-      }
-
-      return "Focus next on strengthening programming fundamentals, SQL, Git/GitHub, Data Structures and Algorithms, and one specialization such as Machine Learning.";
-    }
-
-    if (
-      q.includes("internship") ||
-      q.includes("job") ||
-      q.includes("ready")
-    ) {
-      if (score >= 80) {
-        return `Your current resume score is ${score}/100, which shows a solid foundation. Before applying widely, strengthen your projects, add measurable results, and prepare for technical interviews.`;
-      }
-
-      return `Your current resume score is ${score}/100. You have a foundation, but improving your projects, technical skills, and resume impact can make your profile stronger for internship applications.`;
-    }
-
-    if (
-      q.includes("project") ||
-      q.includes("projects")
-    ) {
-      return "Build projects that demonstrate the skills you want recruiters to notice. For an AIML profile, good directions include Machine Learning, data analysis, recommendation systems, computer vision, NLP, and deployed AI applications.";
-    }
-
-    if (
-      q.includes("resume") ||
-      q.includes("improve")
-    ) {
-      return `Your resume currently scores ${score}/100. Focus on measurable project results, stronger action verbs, relevant technical keywords, and clearly explaining what you personally built.`;
-    }
-
-    if (q.includes("python")) {
-      return "Python is a strong foundation for AIML. Next, deepen your knowledge of NumPy, Pandas, Scikit-learn, data preprocessing, model evaluation, and end-to-end projects.";
-    }
-
-    if (
-      q.includes("machine learning") ||
-      q.includes("ml")
-    ) {
-      return "For Machine Learning, focus on statistics, data preprocessing, supervised and unsupervised learning, model evaluation, feature engineering, and practical projects.";
-    }
-
-    if (
-      q.includes("strength") ||
-      q.includes("good at")
-    ) {
-      if (strengths.length > 0) {
-        return `Your analysis identified these strengths: ${strengths
-          .slice(0, 3)
-          .join(", ")}. These are areas you should continue demonstrating through projects and measurable achievements.`;
-      }
-
-      return "Your profile has a foundation to build on. Your next step should be turning your technical knowledge into stronger, measurable project outcomes.";
-    }
-
-    if (
-      q.includes("weak") ||
-      q.includes("gap") ||
-      q.includes("missing")
-    ) {
-      if (improvementAreas.length > 0) {
-        return `Your analysis identified these improvement areas: ${improvementAreas
-          .slice(0, 3)
-          .join(", ")}. Improving these areas can strengthen your overall career profile.`;
-      }
-
-      return "Your biggest opportunity is to add more depth to your technical projects and demonstrate practical application of your skills.";
-    }
-
-    return `I've analyzed your resume and detected ${skills.length} technical skills. You can ask me about your next skills, internships, projects, resume improvement, Machine Learning, or your skill gaps.`;
-  };
-
-  const sendCoachMessage = (text = coachMessage) => {
+  const sendCoachMessage = async (text = coachMessage) => {
     const trimmed = text.trim();
 
-    if (!trimmed) return;
+    if (!trimmed || isCoachSending) return;
 
-    const userMessage = {
-      role: "user",
-      text: trimmed,
-    };
-
-    const aiMessage = {
-      role: "ai",
-      text: answerCoachQuestion(trimmed),
-    };
-
+    setCoachError("");
+    setIsCoachSending(true);
     setCoachMessages((previous) => [
       ...previous,
-      userMessage,
-      aiMessage,
+      { role: "user", text: trimmed },
     ]);
-
     setCoachMessage("");
+
+    try {
+      const result = await requestAI("/api/career-coach", {
+        message: trimmed,
+        resumeText: sessionStorage.getItem("resumeText") || "",
+        analysis,
+        history: coachMessages.slice(-8).map((item) => ({
+          role: item.role === "ai" ? "assistant" : "user",
+          content: item.text,
+        })),
+      });
+      setCoachMessages((previous) => [
+        ...previous,
+        { role: "ai", text: result.answer },
+      ]);
+    } catch (requestError) {
+      setCoachError(requestError.message);
+    } finally {
+      setIsCoachSending(false);
+    }
   };
 
   const suggestedQuestions = [
@@ -367,6 +284,10 @@ function ResumeAnalyzer() {
           <p>
             Upload your resume and let AI Coach analyze your
             skills, experience, projects and ATS readiness.
+          </p>
+          <p className="resume-ai-disclosure">
+            Resume text is sent to OpenAI for analysis, which may incur API
+            charges. Only upload a file you have permission to share.
           </p>
 
         </section>
@@ -439,7 +360,7 @@ function ResumeAnalyzer() {
               <div className="upload-meta">
                 <span>PDF ONLY</span>
                 <span>MAX 5 MB</span>
-                <span>PRIVATE & SECURE</span>
+                <span>AI-POWERED</span>
               </div>
 
             </div>
@@ -464,7 +385,7 @@ function ResumeAnalyzer() {
 
                 <div className="preview-live">
                   <i />
-                  LIVE
+                  PREVIEW
                 </div>
 
               </div>
@@ -474,7 +395,7 @@ function ResumeAnalyzer() {
                 <div className="mini-score-ring">
 
                   <div>
-                    <strong>76</strong>
+                    <strong>—</strong>
                     <small>/100</small>
                   </div>
 
@@ -505,7 +426,7 @@ function ResumeAnalyzer() {
                     Skills detected
                   </span>
 
-                  <strong>09</strong>
+                  <strong>—</strong>
                 </div>
 
                 <div>
@@ -514,7 +435,7 @@ function ResumeAnalyzer() {
                     Project signal
                   </span>
 
-                  <strong>01</strong>
+                  <strong>—</strong>
                 </div>
 
                 <div>
@@ -523,7 +444,7 @@ function ResumeAnalyzer() {
                     ATS structure
                   </span>
 
-                  <strong>GOOD</strong>
+                  <strong>—</strong>
                 </div>
 
               </div>
@@ -1008,7 +929,16 @@ function ResumeAnalyzer() {
                       )
                     )}
 
+                    {isCoachSending && (
+                      <div className="embedded-message embedded-ai">
+                        <div className="embedded-message-avatar">AI</div>
+                        <div className="embedded-message-bubble">Thinking...</div>
+                      </div>
+                    )}
+
                   </div>
+
+                  {coachError && <p role="alert">{coachError}</p>}
 
                   <div className="embedded-chat-input">
 
@@ -1020,19 +950,19 @@ function ResumeAnalyzer() {
                         )
                       }
                       onKeyDown={(event) => {
-                        if (
-                          event.key === "Enter"
-                        ) {
+                        if (event.key === "Enter" && !event.shiftKey) {
+                          event.preventDefault();
                           sendCoachMessage();
                         }
                       }}
+                      disabled={isCoachSending}
                       placeholder="Ask about your career..."
                     />
 
                     <button
-                      onClick={() =>
-                        sendCoachMessage()
-                      }
+                      onClick={() => sendCoachMessage()}
+                      disabled={isCoachSending || !coachMessage.trim()}
+                      aria-label="Send message"
                     >
                       →
                     </button>
@@ -1084,6 +1014,7 @@ function ResumeAnalyzer() {
 
                           <button
                             key={index}
+                            disabled={isCoachSending}
                             onClick={() =>
                               sendCoachMessage(
                                 question

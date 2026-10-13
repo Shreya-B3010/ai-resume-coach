@@ -1,6 +1,7 @@
 import { useState } from "react";
 import "./MockInterview.css";
 import AppHeader from "../components/AppHeader";
+import { requestAI } from "../lib/ai";
 
 function MockInterview() {
   const [stage, setStage] = useState("setup");
@@ -9,8 +10,11 @@ function MockInterview() {
 
   const [questionIndex, setQuestionIndex] = useState(0);
   const [answer, setAnswer] = useState("");
-
+  const [currentQuestion, setCurrentQuestion] = useState(null);
+  const [askedQuestions, setAskedQuestions] = useState([]);
   const [feedback, setFeedback] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState("");
 
   const [resumeAnalysis] = useState(() => {
     try {
@@ -27,217 +31,78 @@ function MockInterview() {
 
   const score = Number(resumeAnalysis?.resumeScore || 0);
 
-  const questions = [
-    {
-      category: "INTRODUCTION",
-      question:
-        "Tell me about yourself and walk me through your background.",
-      keywords: [
-        "education",
-        "skills",
-        "project",
-        "experience",
-        "goal",
-      ],
-    },
-    {
-      category: "PROJECT EXPERIENCE",
-      question:
-        "Tell me about a project you have worked on and the problem you were trying to solve.",
-      keywords: [
-        "problem",
-        "solution",
-        "technology",
-        "result",
-        "role",
-      ],
-    },
-    {
-      category: "TECHNICAL",
-      question:
-        "What technical skill are you currently strongest in, and how have you applied it in a project?",
-      keywords: [
-        "python",
-        "java",
-        "programming",
-        "project",
-        "implementation",
-      ],
-    },
-    {
-      category: "PROBLEM SOLVING",
-      question:
-        "Describe a difficult technical problem you faced and how you approached solving it.",
-      keywords: [
-        "problem",
-        "debug",
-        "solution",
-        "approach",
-        "testing",
-      ],
-    },
-    {
-      category: "MACHINE LEARNING",
-      question:
-        "If you were given a new machine learning dataset, what steps would you take before training a model?",
-      keywords: [
-        "clean",
-        "preprocess",
-        "missing",
-        "feature",
-        "split",
-        "train",
-        "test",
-      ],
-    },
-    {
-      category: "CAREER",
-      question:
-        "Why are you interested in this role, and what do you want to learn from the experience?",
-      keywords: [
-        "learn",
-        "career",
-        "interest",
-        "skills",
-        "experience",
-        "goal",
-      ],
-    },
-  ];
+  const questionCount = 6;
 
-  const currentQuestion =
-    questions[questionIndex];
+  const requestQuestion = async (previousQuestions) =>
+    requestAI("/api/mock-interview/question", {
+      role,
+      difficulty,
+      skills,
+      previousQuestions,
+    });
 
-  const startInterview = () => {
+  const startInterview = async () => {
     setQuestionIndex(0);
     setAnswer("");
     setFeedback(null);
-    setStage("interview");
+    setError("");
+    setIsSubmitting(true);
+
+    try {
+      const question = await requestQuestion([]);
+      setCurrentQuestion(question);
+      setAskedQuestions([question.question]);
+      setStage("interview");
+    } catch (requestError) {
+      setError(requestError.message);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
-  const evaluateAnswer = () => {
+  const evaluateAnswer = async () => {
     const trimmed = answer.trim();
 
-    if (!trimmed) return;
+    if (!trimmed || isSubmitting) return;
 
-    const words = trimmed.split(/\s+/);
+    setError("");
+    setIsSubmitting(true);
 
-    const lowerAnswer = trimmed.toLowerCase();
-
-    const matchedKeywords =
-      currentQuestion.keywords.filter((keyword) =>
-        lowerAnswer.includes(keyword)
-      );
-
-    let clarityScore = 0;
-    let relevanceScore = 0;
-    let depthScore = 0;
-
-    /* CLARITY */
-
-    if (words.length >= 35) {
-      clarityScore = 8;
-    } else if (words.length >= 20) {
-      clarityScore = 7;
-    } else if (words.length >= 10) {
-      clarityScore = 5;
-    } else {
-      clarityScore = 3;
+    try {
+      const result = await requestAI("/api/mock-interview/evaluate", {
+        role,
+        difficulty,
+        skills,
+        question: currentQuestion.question,
+        answer: trimmed,
+      });
+      setFeedback(result.feedback);
+      setStage("feedback");
+    } catch (requestError) {
+      setError(requestError.message);
+    } finally {
+      setIsSubmitting(false);
     }
-
-    /* RELEVANCE */
-
-    if (matchedKeywords.length >= 4) {
-      relevanceScore = 9;
-    } else if (matchedKeywords.length >= 2) {
-      relevanceScore = 7;
-    } else if (matchedKeywords.length >= 1) {
-      relevanceScore = 5;
-    } else {
-      relevanceScore = 3;
-    }
-
-    /* DEPTH */
-
-    if (words.length >= 60) {
-      depthScore = 9;
-    } else if (words.length >= 40) {
-      depthScore = 8;
-    } else if (words.length >= 20) {
-      depthScore = 6;
-    } else {
-      depthScore = 4;
-    }
-
-    const total =
-      Math.round(
-        ((clarityScore +
-          relevanceScore +
-          depthScore) /
-          30) *
-          100
-      );
-
-    let overall;
-
-    if (total >= 85) {
-      overall = "Strong answer";
-    } else if (total >= 70) {
-      overall = "Good answer";
-    } else if (total >= 55) {
-      overall = "Developing answer";
-    } else {
-      overall = "Needs improvement";
-    }
-
-    const suggestions = [];
-
-    if (words.length < 25) {
-      suggestions.push(
-        "Try giving a more detailed answer with a specific example."
-      );
-    }
-
-    if (matchedKeywords.length < 2) {
-      suggestions.push(
-        "Connect your answer more directly to the question."
-      );
-    }
-
-    if (
-      !lowerAnswer.includes("because") &&
-      !lowerAnswer.includes("result") &&
-      !lowerAnswer.includes("impact")
-    ) {
-      suggestions.push(
-        "Explain the reasoning behind your actions and the result you achieved."
-      );
-    }
-
-    if (suggestions.length === 0) {
-      suggestions.push(
-        "Good structure. Add measurable results or specific technical details to make the answer stronger."
-      );
-    }
-
-    setFeedback({
-      total,
-      overall,
-      clarityScore,
-      relevanceScore,
-      depthScore,
-      suggestions,
-    });
-
-    setStage("feedback");
   };
 
-  const nextQuestion = () => {
-    if (questionIndex < questions.length - 1) {
-      setQuestionIndex((previous) => previous + 1);
-      setAnswer("");
-      setFeedback(null);
-      setStage("interview");
+  const nextQuestion = async () => {
+    if (questionIndex < questionCount - 1) {
+      setError("");
+      setIsSubmitting(true);
+
+      try {
+        const question = await requestQuestion(askedQuestions);
+        setCurrentQuestion(question);
+        setAskedQuestions((previous) => [...previous, question.question]);
+        setQuestionIndex((previous) => previous + 1);
+        setAnswer("");
+        setFeedback(null);
+        setStage("interview");
+      } catch (requestError) {
+        setError(requestError.message);
+      } finally {
+        setIsSubmitting(false);
+      }
     } else {
       setStage("complete");
     }
@@ -247,6 +112,9 @@ function MockInterview() {
     setQuestionIndex(0);
     setAnswer("");
     setFeedback(null);
+    setCurrentQuestion(null);
+    setAskedQuestions([]);
+    setError("");
     setStage("setup");
   };
 
@@ -292,6 +160,12 @@ function MockInterview() {
               on your career profile and get instant feedback
               on your answers.
             </p>
+            <p>
+              Your role, resume skills, and answers are sent to OpenAI to
+              generate questions and feedback. API usage may incur charges.
+            </p>
+
+            {error && <p role="alert">{error}</p>}
 
             <div className="setup-layout">
 
@@ -372,8 +246,9 @@ function MockInterview() {
                 <button
                   className="start-interview-button"
                   onClick={startInterview}
+                  disabled={isSubmitting}
                 >
-                  Start Mock Interview
+                  {isSubmitting ? "Creating your first question..." : "Start Mock Interview"}
                   <span>→</span>
                 </button>
 
@@ -468,7 +343,7 @@ function MockInterview() {
                 <span>
                   QUESTION {String(questionIndex + 1).padStart(2, "0")}
                   {" "}
-                  / {String(questions.length).padStart(2, "0")}
+                  / {String(questionCount).padStart(2, "0")}
                 </span>
 
                 <strong>
@@ -484,6 +359,8 @@ function MockInterview() {
               </div>
 
             </div>
+
+            {error && <p role="alert">{error}</p>}
 
             <div className="question-card">
 
@@ -539,9 +416,9 @@ function MockInterview() {
 
                 <button
                   onClick={evaluateAnswer}
-                  disabled={!answer.trim()}
+                  disabled={!answer.trim() || isSubmitting}
                 >
-                  Evaluate Answer
+                  {isSubmitting ? "Evaluating..." : "Evaluate Answer"}
                   <span>→</span>
                 </button>
 
@@ -556,6 +433,8 @@ function MockInterview() {
 
         {stage === "feedback" && feedback && (
           <section className="feedback-section">
+
+            {error && <p role="alert">{error}</p>}
 
             <div className="feedback-header">
 
@@ -692,10 +571,11 @@ function MockInterview() {
               <button
                 className="next-question-button"
                 onClick={nextQuestion}
+                disabled={isSubmitting}
               >
                 {questionIndex <
-                questions.length - 1
-                  ? "Next Question"
+                questionCount - 1
+                  ? isSubmitting ? "Creating question..." : "Next Question"
                   : "Finish Interview"}
 
                 <span>→</span>
@@ -726,7 +606,7 @@ function MockInterview() {
             </h1>
 
             <p>
-              You've completed all {questions.length}
+              You've completed all {questionCount}
               interview questions. Keep practicing,
               refine your answers, and build confidence.
             </p>
@@ -735,7 +615,7 @@ function MockInterview() {
 
               <div>
                 <strong>
-                  {questions.length}
+                  {questionCount}
                 </strong>
                 <span>
                   QUESTIONS
