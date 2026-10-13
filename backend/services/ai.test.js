@@ -2,32 +2,32 @@ const assert = require("node:assert/strict");
 const { test } = require("node:test");
 const { AIServiceError, requestAIJson } = require("./ai");
 
-const originalApiKey = process.env.OPENAI_API_KEY;
-const originalModel = process.env.OPENAI_MODEL;
+const originalApiKey = process.env.GEMINI_API_KEY;
+const originalModel = process.env.GEMINI_MODEL;
 
 function setEnvironment(apiKey) {
   if (apiKey === undefined) {
-    delete process.env.OPENAI_API_KEY;
+    delete process.env.GEMINI_API_KEY;
   } else {
-    process.env.OPENAI_API_KEY = apiKey;
+    process.env.GEMINI_API_KEY = apiKey;
   }
-  delete process.env.OPENAI_MODEL;
+  delete process.env.GEMINI_MODEL;
 }
 
 function restoreEnvironment() {
   if (originalApiKey === undefined) {
-    delete process.env.OPENAI_API_KEY;
+    delete process.env.GEMINI_API_KEY;
   } else {
-    process.env.OPENAI_API_KEY = originalApiKey;
+    process.env.GEMINI_API_KEY = originalApiKey;
   }
   if (originalModel === undefined) {
-    delete process.env.OPENAI_MODEL;
+    delete process.env.GEMINI_MODEL;
   } else {
-    process.env.OPENAI_MODEL = originalModel;
+    process.env.GEMINI_MODEL = originalModel;
   }
 }
 
-test("AI requests fail explicitly when no provider key is configured", async () => {
+test("AI requests fail explicitly when no Gemini key is configured", async () => {
   setEnvironment(undefined);
 
   try {
@@ -36,14 +36,14 @@ test("AI requests fail explicitly when no provider key is configured", async () 
       (error) =>
         error instanceof AIServiceError &&
         error.statusCode === 503 &&
-        error.message.includes("OPENAI_API_KEY")
+        error.message.includes("GEMINI_API_KEY")
     );
   } finally {
     restoreEnvironment();
   }
 });
 
-test("AI requests return parsed JSON and use the configured model", async () => {
+test("AI requests return parsed JSON using Gemini's structured output API", async () => {
   setEnvironment("unit-test-key");
   let request;
 
@@ -55,15 +55,13 @@ test("AI requests return parsed JSON and use the configured model", async () => 
         request = { url: String(url), options };
         return new Response(
           JSON.stringify({
-            id: "test",
-            object: "chat.completion",
-            created: 1,
-            model: "gpt-4o-mini",
-            choices: [
+            candidates: [
               {
-                index: 0,
-                message: { role: "assistant", content: '{"answer":"hello"}' },
-                finish_reason: "stop",
+                content: {
+                  parts: [{ text: '{"answer":"hello"}' }],
+                  role: "model",
+                },
+                finishReason: "STOP",
               },
             ],
           }),
@@ -73,19 +71,33 @@ test("AI requests return parsed JSON and use the configured model", async () => 
     });
 
     assert.deepEqual(result, { answer: "hello" });
-    assert.match(request.url, /\/chat\/completions$/);
-    assert.equal(request.options.headers.get("authorization"), "Bearer unit-test-key");
-    assert.equal(
-      JSON.parse(request.options.body).response_format.type,
-      "json_object"
+    assert.match(
+      request.url,
+      /\/models\/gemini-2\.5-flash:generateContent$/
     );
-    assert.equal(JSON.parse(request.options.body).model, "gpt-4o-mini");
+    assert.equal(
+      request.options.headers["x-goog-api-key"],
+      "unit-test-key"
+    );
+    assert.equal(request.options.headers.authorization, undefined);
+    const requestBody = JSON.parse(request.options.body);
+    assert.equal(
+      requestBody.generationConfig.responseMimeType,
+      "application/json"
+    );
+    assert.equal(
+      requestBody.systemInstruction.parts[0].text,
+      "Return a JSON answer."
+    );
+    assert.deepEqual(requestBody.contents, [
+      { role: "user", parts: [{ text: "Test" }] },
+    ]);
   } finally {
     restoreEnvironment();
   }
 });
 
-test("AI provider authentication errors are returned without secret details", async () => {
+test("Gemini authentication errors are returned without secret details", async () => {
   setEnvironment("unit-test-key");
 
   try {
@@ -96,15 +108,47 @@ test("AI provider authentication errors are returned without secret details", as
         fetchImplementation: async () =>
           new Response(
             JSON.stringify({
-              error: { message: "invalid key: unit-test-key", type: "auth_error" },
+              error: {
+                message: "invalid key: unit-test-key",
+                status: "PERMISSION_DENIED",
+              },
             }),
-            { status: 401, headers: { "Content-Type": "application/json" } }
+            { status: 403, headers: { "Content-Type": "application/json" } }
           ),
       }),
       (error) =>
         error instanceof AIServiceError &&
         error.statusCode === 503 &&
         !error.message.includes("unit-test-key")
+    );
+  } finally {
+    restoreEnvironment();
+  }
+});
+
+test("Gemini free-tier exhaustion is reported without a paid fallback", async () => {
+  setEnvironment("unit-test-key");
+
+  try {
+    await assert.rejects(
+      requestAIJson({
+        system: "test",
+        user: "test",
+        fetchImplementation: async () =>
+          new Response(
+            JSON.stringify({
+              error: {
+                message: "quota exceeded",
+                status: "RESOURCE_EXHAUSTED",
+              },
+            }),
+            { status: 429, headers: { "Content-Type": "application/json" } }
+          ),
+      }),
+      (error) =>
+        error instanceof AIServiceError &&
+        error.statusCode === 429 &&
+        error.message.includes("free-tier quota")
     );
   } finally {
     restoreEnvironment();

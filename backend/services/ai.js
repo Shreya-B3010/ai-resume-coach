@@ -1,5 +1,3 @@
-const OpenAI = require("openai");
-
 class AIServiceError extends Error {
   constructor(message, statusCode = 502) {
     super(message);
@@ -14,48 +12,81 @@ async function requestAIJson({
   maxCompletionTokens = 1200,
   fetchImplementation,
 }) {
-  if (!process.env.OPENAI_API_KEY) {
+  if (!process.env.GEMINI_API_KEY) {
     throw new AIServiceError(
-      "AI features are not configured. Add OPENAI_API_KEY to the backend environment.",
+      "AI features are not configured. Add GEMINI_API_KEY to the backend environment.",
       503
     );
   }
 
-  const client = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY,
-    ...(fetchImplementation ? { fetch: fetchImplementation } : {}),
-  });
+  const model = process.env.GEMINI_MODEL || "gemini-2.5-flash";
+  const fetchRequest = fetchImplementation || fetch;
+  let response;
+
+  try {
+    response = await fetchRequest(
+      `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(
+        model
+      )}:generateContent`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-goog-api-key": process.env.GEMINI_API_KEY,
+        },
+        body: JSON.stringify({
+          systemInstruction: { parts: [{ text: system }] },
+          contents: [{ role: "user", parts: [{ text: user }] }],
+          generationConfig: {
+            responseMimeType: "application/json",
+            maxOutputTokens: maxCompletionTokens,
+          },
+        }),
+      }
+    );
+  } catch (error) {
+    console.error("Gemini request failed:", { name: error.name });
+    throw new AIServiceError(
+      "The AI service is temporarily unavailable. Please try again.",
+      502
+    );
+  }
 
   let completion;
 
   try {
-    completion = await client.chat.completions.create({
-      model: process.env.OPENAI_MODEL || "gpt-4o-mini",
-      messages: [
-        { role: "system", content: system },
-        { role: "user", content: user },
-      ],
-      response_format: { type: "json_object" },
-      max_completion_tokens: maxCompletionTokens,
-    });
-  } catch (error) {
-    if (error.status === 401 || error.status === 403) {
-      throw new AIServiceError(
-        "The AI provider rejected its configured API key. Check OPENAI_API_KEY in the backend environment.",
-        503
-      );
-    }
+    completion = await response.json();
+  } catch {
+    throw new AIServiceError(
+      "The AI service returned an unreadable response. Please try again."
+    );
+  }
 
-    if (error.status === 429) {
+  if (!response.ok) {
+    const providerStatus = completion.error?.status;
+
+    if (response.status === 429 || providerStatus === "RESOURCE_EXHAUSTED") {
       throw new AIServiceError(
-        "The AI service is temporarily rate-limited. Please try again shortly.",
+        "The Gemini free-tier quota is temporarily unavailable or exhausted. Please try again later.",
         429
       );
     }
 
-    console.error("AI provider request failed:", {
-      status: error.status,
-      code: error.code,
+    if (
+      [400, 401, 403].includes(response.status) ||
+      ["INVALID_ARGUMENT", "PERMISSION_DENIED", "UNAUTHENTICATED"].includes(
+        providerStatus
+      )
+    ) {
+      throw new AIServiceError(
+        "Gemini rejected its API configuration. Check GEMINI_API_KEY and GEMINI_MODEL in the backend environment.",
+        503
+      );
+    }
+
+    console.error("Gemini provider request failed:", {
+      status: response.status,
+      providerStatus,
     });
     throw new AIServiceError(
       "The AI service is temporarily unavailable. Please try again.",
@@ -63,7 +94,9 @@ async function requestAIJson({
     );
   }
 
-  const content = completion.choices[0]?.message?.content;
+  const content = completion.candidates?.[0]?.content?.parts
+    ?.map((part) => part.text || "")
+    .join("");
 
   if (!content) {
     throw new AIServiceError(

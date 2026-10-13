@@ -125,6 +125,11 @@ function CareerCoach() {
             understand what to learn, what to
             build, and where to go next.
           </p>
+          <p>
+            Career questions and resume context are sent to Google Gemini.
+            The free tier has usage limits, and Google may use submitted
+            content to improve its products.
+          </p>
 
         </section>
 

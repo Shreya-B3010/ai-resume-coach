@@ -286,8 +286,9 @@ function ResumeAnalyzer() {
             skills, experience, projects and ATS readiness.
           </p>
           <p className="resume-ai-disclosure">
-            Resume text is sent to OpenAI for analysis, which may incur API
-            charges. Only upload a file you have permission to share.
+            Resume text is sent to Google Gemini for analysis. The free tier
+            has usage limits and Google may use submitted content to improve
+            its products. Only upload a file you have permission to share.
           </p>
 
         </section>

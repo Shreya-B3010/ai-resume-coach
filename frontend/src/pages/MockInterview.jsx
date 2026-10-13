@@ -161,8 +161,10 @@ function MockInterview() {
               on your answers.
             </p>
             <p>
-              Your role, resume skills, and answers are sent to OpenAI to
-              generate questions and feedback. API usage may incur charges.
+              Your role, resume skills, and answers are sent to Google Gemini
+              to generate questions and feedback. The free tier has usage
+              limits, and Google may use submitted content to improve its
+              products.
             </p>
 
             {error && <p role="alert">{error}</p>}
