@@ -1,32 +1,33 @@
-const { pool } = require("../config/db");
+const { randomUUID } = require("node:crypto");
+const { query } = require("../config/db");
 
 async function createUser({ name, email, password }) {
-  const result = await pool.query(
-    `INSERT INTO users (name, email, password)
-     VALUES ($1, $2, $3)
-     RETURNING id, name, email`,
-    [name, email, password]
+  const id = randomUUID();
+  await query(
+    `INSERT INTO users (id, name, email, password)
+     VALUES (?, ?, ?, ?)`,
+    [id, name, email, password]
   );
 
-  return result.rows[0];
+  return { id, name, email };
 }
 
 async function findUserByEmail(email) {
-  const result = await pool.query(
-    "SELECT id, name, email, password FROM users WHERE email = $1",
+  const [rows] = await query(
+    "SELECT id, name, email, password FROM users WHERE email = ?",
     [email]
   );
 
-  return result.rows[0] || null;
+  return rows[0] || null;
 }
 
 async function findUserById(id) {
-  const result = await pool.query(
-    "SELECT id, name, email FROM users WHERE id = $1",
+  const [rows] = await query(
+    "SELECT id, name, email FROM users WHERE id = ?",
     [id]
   );
 
-  return result.rows[0] || null;
+  return rows[0] || null;
 }
 
 module.exports = { createUser, findUserByEmail, findUserById };

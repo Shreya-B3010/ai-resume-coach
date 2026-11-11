@@ -5,7 +5,11 @@ const cors = require("cors");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const multer = require("multer");
-const { connectDB } = require("./config/db");
+const {
+  checkDB,
+  connectDB,
+  isDatabaseUnavailable,
+} = require("./config/db");
 const { createUser, findUserByEmail, findUserById } = require("./models/User");
 const authMiddleware = require("./middleware/auth");
 const { PDFParse } = require("pdf-parse");
@@ -87,11 +91,24 @@ const upload = multer({
 // HEALTH CHECK
 // --------------------------------------------------
 
-app.get("/api/health", (req, res) => {
-  res.json({
-    success: true,
-    message: "AI Coach backend is running!",
-  });
+app.get("/api/health", async (req, res) => {
+  try {
+    await checkDB();
+    return res.json({
+      success: true,
+      status: "ok",
+      database: "connected",
+      message: "AI Coach backend and MySQL are healthy.",
+    });
+  } catch (error) {
+    console.error("Health check failed:", error.message);
+    return res.status(503).json({
+      success: false,
+      status: "unavailable",
+      database: "disconnected",
+      message: "The backend is running, but MySQL is unavailable.",
+    });
+  }
 });
 
 // --------------------------------------------------
@@ -167,10 +184,17 @@ app.post("/api/signup", async (req, res) => {
   } catch (error) {
     console.error("Signup error:", error);
 
-    if (error.code === "23505") {
+    if (error.code === "ER_DUP_ENTRY") {
       return res.status(409).json({
         success: false,
         message: "An account with this email already exists.",
+      });
+    }
+
+    if (isDatabaseUnavailable(error)) {
+      return res.status(503).json({
+        success: false,
+        message: "Account services are temporarily unavailable. Please try again shortly.",
       });
     }
 
@@ -232,6 +256,14 @@ app.post("/api/login", async (req, res) => {
     });
   } catch (error) {
     console.error("Login error:", error);
+
+    if (isDatabaseUnavailable(error)) {
+      return res.status(503).json({
+        success: false,
+        message: "Account services are temporarily unavailable. Please try again shortly.",
+      });
+    }
+
     return res.status(500).json({
       success: false,
       message: "Server error while logging in.",
@@ -1043,11 +1075,22 @@ app.post(
 // --------------------------------------------------
 
 async function startServer() {
-  await connectDB();
-
   app.listen(PORT, () => {
     console.log(`AI Coach backend running at http://localhost:${PORT}`);
   });
+
+  while (true) {
+    try {
+      await connectDB();
+      break;
+    } catch (error) {
+      console.error(
+        "MySQL initialization failed; retrying in 30 seconds:",
+        error.message
+      );
+      await new Promise((resolve) => setTimeout(resolve, 30000));
+    }
+  }
 }
 
 startServer();

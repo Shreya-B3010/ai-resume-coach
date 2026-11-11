@@ -6,10 +6,14 @@ a career profile built from your resume.
 ## Live app
 
 - **Website:** [AI Resume Coach](https://ai-resume-coach-frontend.onrender.com)
-- **Backend health:** [Check the API](https://ai-resume-coach-lhve.onrender.com/api/health)
+- **Backend health:** [Check the API and database status](https://ai-resume-coach-lhve.onrender.com/api/health)
 
 Create an account or sign in before using the resume analyzer and career tools.
 Render's free backend may take around 50 seconds to wake after inactivity.
+The health check returns HTTP 503 when the database is unreachable or the
+`users` table is unavailable. The backend now expects MySQL; configure
+`MYSQL_HOST`, `MYSQL_PORT`, `MYSQL_USER`, `MYSQL_PASSWORD`, and `MYSQL_DATABASE`
+in the hosting environment.
 
 ## Current live features
 
@@ -32,7 +36,8 @@ sensitive information when using Gemini's free tier.
 Requirements: Node.js and npm.
 
 1. Configure `backend/.env` using [`backend/.env.example`](./backend/.env.example).
-   `DATABASE_URL` and `JWT_SECRET` are required. `GEMINI_API_KEY` is optional;
+   the MySQL connection settings and `JWT_SECRET` are required.
+   `GEMINI_API_KEY` is optional;
    without it, offline analysis and guidance remain available.
 2. Install and start the backend:
 
