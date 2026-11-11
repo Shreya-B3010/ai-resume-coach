@@ -13,9 +13,7 @@ CREATE DATABASE ai_resume_coach;
 Set `MYSQL_HOST`, `MYSQL_PORT`, `MYSQL_USER`, `MYSQL_PASSWORD`, and
 `MYSQL_DATABASE` in `backend/.env` using the connection details for that MySQL
 server. On startup, the backend creates the `users` table if needed. Keep the
-password private. For a hosted backend, configure a MySQL server that the host
-can reach; `127.0.0.1` refers to the backend host itself, not your personal
-computer.
+password private. For this local setup, `127.0.0.1` refers to your computer.
 
 When configured, the resume reviewer, career coach, and mock interviewer use
 Google's Gemini API from the backend. Set `GEMINI_API_KEY` in the backend
@@ -36,9 +34,7 @@ automatically switch to a paid tier; when the free quota is exhausted, AI
 requests return an explicit quota error. The backend also limits authenticated
 accounts to 20 AI requests per minute.
 
-For local development, add these values to `backend/.env`. For Render, add the
-key as a secret environment variable named `GEMINI_API_KEY` on the backend
-service or its linked environment group, then redeploy the service. Create the
-key in [Google AI Studio](https://aistudio.google.com/apikey) and keep the
-project on Google's free tier; do not attach billing if you want to avoid
-charges. Free quotas and model availability can change.
+For local development, set `GEMINI_API_KEY` in `backend/.env`. Create the key
+in [Google AI Studio](https://aistudio.google.com/apikey) and keep the project
+on Google's free tier; do not attach billing if you want to avoid charges.
+Free quotas and model availability can change.

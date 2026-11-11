@@ -3,22 +3,9 @@
 Analyze a resume, explore career guidance, and practice interview answers with
 a career profile built from your resume.
 
-## Live app
+## AI features
 
-- **Website:** [AI Resume Coach](https://ai-resume-coach-frontend.onrender.com)
-- **Backend health:** [Check the API and database status](https://ai-resume-coach-lhve.onrender.com/api/health)
-
-Create an account or sign in before using the resume analyzer and career tools.
-Render's free backend may take around 50 seconds to wake after inactivity.
-The health check returns HTTP 503 when the database is unreachable or the
-`users` table is unavailable. The backend now expects MySQL; configure
-`MYSQL_HOST`, `MYSQL_PORT`, `MYSQL_USER`, `MYSQL_PASSWORD`, and `MYSQL_DATABASE`
-in the hosting environment.
-
-## Current live features
-
-The Gemini API key is not currently configured in the production backend.
-Until a replacement key is available:
+Without a configured `GEMINI_API_KEY`:
 
 - Resume analysis uses local, rule-based checks. Resume text is not sent to an
   AI provider in this mode.
@@ -26,10 +13,10 @@ Until a replacement key is available:
 - Mock Interview uses prepared practice questions and heuristic feedback.
 - Offline results are labeled; they are not AI-generated.
 
-The backend switches to Gemini when `GEMINI_API_KEY` is configured. Gemini's
-free tier has quotas, and Google may use submitted content to improve its
-products. The app does not switch to a paid tier automatically. Do not upload
-sensitive information when using Gemini's free tier.
+The backend uses Gemini when `GEMINI_API_KEY` is configured. Gemini's free
+tier has quotas, and Google may use submitted content to improve its products.
+The app does not switch to a paid tier automatically. Do not upload sensitive
+information when using Gemini's free tier.
 
 ## Run locally
 
