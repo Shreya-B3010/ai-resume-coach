@@ -1,36 +1,29 @@
 # AI Resume Coach
 
-Analyze a resume, explore career guidance, and practice interview answers with
-a career profile built from your resume.
+Analyze resumes, get career guidance, and practice interviews.
 
-## Live website
+**Website:** [AI Resume Coach](https://ai-resume-coach-frontend.onrender.com)
 
-- **Website:** [AI Resume Coach](https://ai-resume-coach-frontend.onrender.com)
+## Features
 
-## AI features
-
-Without a configured `GEMINI_API_KEY`:
-
-- Resume analysis uses local, rule-based checks. Resume text is not sent to an
-  AI provider in this mode.
-- Career Coach replies with offline guidance based on the analyzed profile.
-- Mock Interview uses prepared practice questions and heuristic feedback.
-- Offline results are labeled; they are not AI-generated.
-
-The backend uses Gemini when `GEMINI_API_KEY` is configured. Gemini's free
-tier has quotas, and Google may use submitted content to improve its products.
-The app does not switch to a paid tier automatically. Do not upload sensitive
-information when using Gemini's free tier.
+- Resume analysis, career coaching, and mock interview practice.
+- Uses Gemini when `GEMINI_API_KEY` is configured; otherwise uses offline,
+  rule-based and prepared results.
+- With Gemini enabled, submitted content is sent to Google for processing.
 
 ## Run locally
 
-Requirements: Node.js and npm.
+Requirements: Node.js, npm, and MySQL Server.
 
-1. Configure `backend/.env` using [`backend/.env.example`](./backend/.env.example).
-   the MySQL connection settings and `JWT_SECRET` are required.
-   `GEMINI_API_KEY` is optional;
-   without it, offline analysis and guidance remain available.
-2. Install and start the backend:
+1. Create the database in MySQL Workbench:
+
+   ```sql
+   CREATE DATABASE ai_resume_coach;
+   ```
+
+2. Configure `backend/.env` from [`backend/.env.example`](./backend/.env.example).
+   Set the MySQL connection values and `JWT_SECRET`. `GEMINI_API_KEY` is optional.
+3. Start the backend:
 
    ```powershell
    cd backend
@@ -38,7 +31,7 @@ Requirements: Node.js and npm.
    npm start
    ```
 
-3. In a second terminal, install and start the frontend:
+4. In a second terminal, start the frontend:
 
    ```powershell
    cd frontend
@@ -46,22 +39,12 @@ Requirements: Node.js and npm.
    npm run dev
    ```
 
-The local frontend is served at `http://localhost:5173`. Configure
-`VITE_API_ORIGIN` in the frontend environment if the backend is not at its
-default `http://localhost:5000` address.
+Open `http://localhost:5173`. See the [backend setup guide](./backend/README.md)
+for details.
 
-## Verification
-
-Run backend tests:
+## Test
 
 ```powershell
 cd backend
 npm test
-```
-
-Build the frontend:
-
-```powershell
-cd frontend
-npm run build
 ```
