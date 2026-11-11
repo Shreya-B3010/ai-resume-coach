@@ -2,8 +2,6 @@
 
 Analyze resumes, get career guidance, and practice interviews.
 
-**Website:** [AI Resume Coach](https://ai-resume-coach-frontend.onrender.com)
-
 ## Features
 
 - Resume analysis, career coaching, and mock interview practice.
